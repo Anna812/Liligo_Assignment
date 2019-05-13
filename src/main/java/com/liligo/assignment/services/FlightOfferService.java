@@ -2,10 +2,14 @@ package com.liligo.assignment.services;
 
 import com.liligo.assignment.models.FlightOffer;
 import com.liligo.assignment.models.FlightOfferRequest;
+import com.liligo.assignment.models.TripType;
 import com.liligo.assignment.repos.FlightOfferRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,15 +34,36 @@ public class FlightOfferService {
                 .filter(offer -> offer.getPrice() / offer.getNumberOfPassengers() < 1000)
                 .filter(offer -> ! offer.getStartLocation().getCountry()
                         .equals(offer.getEndLocation().getCountry()))
-                .filter(offer -> offer.getInbound().getArrival().toLocalDateTime()
-                                        .isBefore(offer.getOutbound().getDeparture().toLocalDateTime()))
-                .filter(offer -> ! offer.getInbound().getDeparture().toLocalDateTime().plusDays(6)
-                        .equals(offer.getOutbound().getArrival().toLocalDateTime()))
+                .filter(offer -> convertOffsetToZonedDateTime(offer.getInbound().getArrival())
+                                        .isBefore(convertOffsetToZonedDateTime(offer.getOutbound().getDeparture())))
+                .filter(offer -> ! convertOffsetToZonedDateTime(offer.getInbound().getDeparture()).plusDays(6)
+                        .equals(convertOffsetToZonedDateTime(offer.getOutbound().getArrival())))
                 .collect(Collectors.toList());
     }
 
     private List<FlightOffer> mapRequestObject(List<FlightOfferRequest> filteredOffers) {
-        return null;
+        return filteredOffers.stream()
+                .map(offer -> new FlightOffer(
+                        offer.getStartLocation(),
+                        offer.getEndLocation(),
+                        convertOffsetToZonedDateTime(offer.getInbound().getDeparture()),
+                        convertOffsetToZonedDateTime(offer.getOutbound().getDeparture()),
+                        getTripType(offer),
+                        offer.getPrice() / offer.getNumberOfPassengers(),
+                        offer.getNumberOfPassengers(),
+                        offer.getProvider()))
+                .collect(Collectors.toList());
+    }
+
+    private ZonedDateTime convertOffsetToZonedDateTime(OffsetDateTime rawValue) {
+        return rawValue.toZonedDateTime().withZoneSameInstant(ZoneOffset.UTC);
+    }
+
+    private TripType getTripType(FlightOfferRequest offer) {
+        if(offer.getStartLocation().equals(offer.getEndLocation())) {
+            return TripType.ROUND_TRIP;
+        }
+        return TripType.ONE_WAY;
     }
 
     public List<FlightOffer> findOfferByNoOfPassengers(int numberOfPassengers) {

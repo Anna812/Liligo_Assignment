@@ -1,6 +1,7 @@
 package com.liligo.assignment.controllers;
 
 import com.liligo.assignment.models.FlightOffer;
+import com.liligo.assignment.models.FlightOfferRequest;
 import com.liligo.assignment.services.FlightOfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
