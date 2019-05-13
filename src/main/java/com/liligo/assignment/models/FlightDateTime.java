@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class FlightDateTime {
+    @Id
+    @GeneratedValue
+    @Column(name="datetime_id")
+    private long id;
     private LocalDateTime departure;
     private LocalDateTime arrival;
 }
