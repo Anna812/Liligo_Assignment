@@ -1,5 +1,6 @@
 package com.liligo.assignment.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FlightOfferRequest {
+    @JsonProperty("from")
     private Location startLocation;
+    @JsonProperty("to")
     private Location endLocation;
     private FlightDateTime inbound;
     private FlightDateTime outbound;
