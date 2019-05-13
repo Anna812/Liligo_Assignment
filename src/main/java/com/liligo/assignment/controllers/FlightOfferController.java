@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,8 +29,8 @@ public class FlightOfferController {
     }
 
     @PostMapping("/save")
-    public String save(List<FlightOffer> offers) {
+    public List<FlightOffer> save(ArrayList<FlightOffer> offers) {
         flightOfferService.saveOffers(offers);
-        return "redirect:/offers";
+        return index();
     }
 }
