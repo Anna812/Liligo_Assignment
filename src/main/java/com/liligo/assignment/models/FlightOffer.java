@@ -18,11 +18,11 @@ public class FlightOffer {
     @GeneratedValue
     @Column(name="datetime_id")
     private long id;
-    @ManyToOne
-    @JoinColumn(name = "location_id", insertable=false, updatable =false)
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "startlocation_id")
     private Location startLocation;
-    @ManyToOne
-    @JoinColumn(name = "location_id", insertable=false, updatable =false)
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "endlocation_id")
     private Location endLocation;
     private ZonedDateTime inbound;
     private ZonedDateTime outbound;
