@@ -26,5 +26,6 @@ public class FlightOffer {
     private TripType tripType;
     @Column(name="price_per_passenger")
     private int pricePerPassenger;
+    private int numberOfPassengers;
     private String provider;
 }

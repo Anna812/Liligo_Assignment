@@ -20,4 +20,8 @@ public class FlightOfferService {
     public void saveOffers(List<FlightOffer> offers) {
         repository.saveAll(offers);
     }
+
+    public List<FlightOffer> findOfferByNoOfPassengers(int numberOfPassengers) {
+        return repository.findAllByNumberOfPassengers(numberOfPassengers);
+    }
 }
