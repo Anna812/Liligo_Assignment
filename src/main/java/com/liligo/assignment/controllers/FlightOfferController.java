@@ -29,7 +29,7 @@ public class FlightOfferController {
     }
 
     @PostMapping("/save")
-    public List<FlightOffer> save(ArrayList<FlightOffer> offers) {
+    public List<FlightOffer> save(ArrayList<FlightOfferRequest> offers) {
         flightOfferService.saveOffers(offers);
         return index();
     }
