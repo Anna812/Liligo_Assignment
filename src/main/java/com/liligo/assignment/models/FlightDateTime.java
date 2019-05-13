@@ -1,22 +1,17 @@
 package com.liligo.assignment.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
-@Entity
-@Table(name = "dates")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class FlightDateTime {
-    @Id
-    @GeneratedValue
-    @Column(name="datetime_id")
-    private long id;
-    private LocalDateTime departure;
-    private LocalDateTime arrival;
+    private OffsetDateTime departure;
+    private OffsetDateTime arrival;
 }
