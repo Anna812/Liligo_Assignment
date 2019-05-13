@@ -32,12 +32,12 @@ public class FlightOfferService {
     private List<FlightOfferRequest> filterOffersToSave(List<FlightOfferRequest> offers) {
         return offers.stream()
                 .filter(offer -> offer.getPrice() / offer.getNumberOfPassengers() < 1000)
-                .filter(offer -> ! offer.getStartLocation().getCountry()
+                .filter(offer -> !offer.getStartLocation().getCountry()
                         .equals(offer.getEndLocation().getCountry()))
-                .filter(offer -> convertOffsetToZonedDateTime(offer.getInbound().getArrival())
-                                        .isBefore(convertOffsetToZonedDateTime(offer.getOutbound().getDeparture())))
-                .filter(offer -> ! convertOffsetToZonedDateTime(offer.getInbound().getDeparture()).plusDays(6)
-                        .equals(convertOffsetToZonedDateTime(offer.getOutbound().getArrival())))
+                .filter(offer -> convertOffsetToZonedDateTime(offer.getOutbound().getArrival())
+                                        .isBefore(convertOffsetToZonedDateTime(offer.getInbound().getDeparture())))
+                .filter(offer -> !convertOffsetToZonedDateTime(offer.getOutbound().getDeparture()).plusDays(6)
+                        .equals(convertOffsetToZonedDateTime(offer.getInbound().getArrival())))
                 .collect(Collectors.toList());
     }
 
