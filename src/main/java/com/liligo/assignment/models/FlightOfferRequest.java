@@ -11,6 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FlightOfferRequest {
+    private static final int maximumPrice = 1000;
+    private static final int minimumDurationDays = 6;
     @JsonProperty("from")
     private Location startLocation;
     @JsonProperty("to")
@@ -20,4 +22,25 @@ public class FlightOfferRequest {
     private int numberOfPassengers;
     private String provider;
     private int price;
+
+    public boolean isPriceUnderLimit() {
+        return price / numberOfPassengers < maximumPrice;
+    }
+
+    public boolean isDomestic() {
+        return startLocation.getCountry().equals(endLocation.getCountry());
+    }
+
+    public boolean areDatesConsequent() {
+        return inbound == null
+                || inbound.isValidFlightDate()
+                || outbound.isValidFlightDate()
+                || outbound.getArrival().isBefore(inbound.getDeparture());
+    }
+
+    public boolean isTripLongEnough() {
+        return inbound == null
+                || !outbound.getDeparture().plusDays(minimumDurationDays)
+                .equals(inbound.getArrival());
+    }
 }

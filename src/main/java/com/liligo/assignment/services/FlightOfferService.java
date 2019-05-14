@@ -1,9 +1,6 @@
 package com.liligo.assignment.services;
 
-import com.liligo.assignment.models.FlightOffer;
-import com.liligo.assignment.models.FlightOfferRequest;
-import com.liligo.assignment.models.FlightOfferResponse;
-import com.liligo.assignment.models.TripType;
+import com.liligo.assignment.models.*;
 import com.liligo.assignment.repos.FlightOfferRepository;
 import com.sun.scenario.effect.Offset;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,14 +27,19 @@ public class FlightOfferService {
                 .map(offer -> new FlightOfferResponse(
                         offer.getStartLocation(),
                         offer.getEndLocation(),
-                        offer.getInboundDeparture() != null ? offer.getInboundDeparture().withOffsetSameInstant(ZoneOffset.UTC) : null,
+                        convertToUTC(offer.getInboundDeparture()),
                         offer.getOutboundDeparture().withOffsetSameInstant(ZoneOffset.UTC),
                         offer.getTripType(),
                         calculateOutboundDuration(offer),
                         offer.getPricePerPassenger(),
-                        offer.getProvider()
-                ))
+                        offer.getProvider()))
                 .collect(Collectors.toList());
+    }
+
+    private OffsetDateTime convertToUTC(OffsetDateTime inboundDeparture) {
+        Optional<OffsetDateTime> optionalDepartureTime = new Optional<>(inboundDeparture);
+        return optionalDepartureTime.map(x -> x.withOffsetSameInstant(ZoneOffset.UTC))
+                .orElse(null);
     }
 
     private int calculateOutboundDuration(FlightOffer offer) {
@@ -56,13 +59,10 @@ public class FlightOfferService {
 
     private List<FlightOfferRequest> filterOffersToSave(List<FlightOfferRequest> offers) {
         return offers.stream()
-                .filter(offer -> offer.getPrice() / offer.getNumberOfPassengers() < 1000)
-                .filter(offer -> !offer.getStartLocation().getCountry()
-                        .equals(offer.getEndLocation().getCountry()))
-                .filter(offer -> offer.getInbound() == null || offer.getOutbound().getArrival()
-                        .isBefore(offer.getInbound().getDeparture()))
-                .filter(offer -> offer.getInbound() == null || !offer.getOutbound().getDeparture().plusDays(6)
-                        .equals(offer.getInbound().getArrival()))
+                .filter(FlightOfferRequest::isPriceUnderLimit)
+                .filter(offer -> !offer.isDomestic())
+                .filter(FlightOfferRequest::areDatesConsequent)
+                .filter(FlightOfferRequest::isTripLongEnough)
                 .collect(Collectors.toList());
     }
 

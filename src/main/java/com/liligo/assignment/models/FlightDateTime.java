@@ -14,4 +14,8 @@ import java.time.OffsetDateTime;
 public class FlightDateTime {
     private OffsetDateTime departure;
     private OffsetDateTime arrival;
+
+    public boolean isValidFlightDate() {
+        return departure.isBefore(arrival);
+    }
 }
