@@ -27,6 +27,10 @@ public class FlightOfferService {
         return mapToResponseObject(repository.findAll());
     }
 
+    public List<FlightOfferResponse> findOfferByNoOfPassengers(int numberOfPassengers) {
+        return mapToResponseObject(repository.findAllByNumberOfPassengers(numberOfPassengers));
+    }
+
     private List<FlightOfferResponse> mapToResponseObject(Iterable<FlightOffer> offers) {
         return StreamSupport.stream(offers.spliterator(), false)
                 .map(offer -> new FlightOfferResponse(
@@ -58,10 +62,6 @@ public class FlightOfferService {
     private int calculateOutboundDuration(FlightOffer offer) {
         long duration = Duration.between(offer.getOutboundDeparture(), offer.getOutboundArrival()).toMinutes();
         return (int) duration;
-    }
-
-    public List<FlightOfferResponse> findOfferByNoOfPassengers(int numberOfPassengers) {
-        return mapToResponseObject(repository.findAllByNumberOfPassengers(numberOfPassengers));
     }
 
     public void saveOffers(List<FlightOfferRequest> offers) {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +24,18 @@ public class FlightOfferController {
     FlightOfferService flightOfferService;
 
     @GetMapping("/offers")
-    public List<FlightOfferResponse> index() {
+    public List<FlightOfferResponse> getOffers() {
         return flightOfferService.findAllFlights();
     }
 
     @GetMapping("/offers/{numberOfPassengers}")
-    public List<FlightOfferResponse> index(@PathVariable int numberOfPassengers) {
+    public List<FlightOfferResponse> getOffersByNoPassengers(@PathVariable int numberOfPassengers) {
+        List<FlightOfferResponse> offers = new ArrayList<>();
         if(numberOfPassengers > 0) {
-            List<FlightOfferResponse> offers = flightOfferService.findOfferByNoOfPassengers(numberOfPassengers);
-            if(!CollectionUtils.isEmpty(offers)) {
-                return offers;
-            }
+            offers = flightOfferService.findOfferByNoOfPassengers(numberOfPassengers);
+
         }
-        return index();
+        return offers;
     }
 
     @PostMapping("/save")
