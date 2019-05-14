@@ -34,10 +34,10 @@ public class FlightOfferService {
                 .filter(offer -> offer.getPrice() / offer.getNumberOfPassengers() < 1000)
                 .filter(offer -> !offer.getStartLocation().getCountry()
                         .equals(offer.getEndLocation().getCountry()))
-                .filter(offer -> convertOffsetToZonedDateTime(offer.getOutbound().getArrival())
-                                        .isBefore(convertOffsetToZonedDateTime(offer.getInbound().getDeparture())))
-                .filter(offer -> !convertOffsetToZonedDateTime(offer.getOutbound().getDeparture()).plusDays(6)
-                        .equals(convertOffsetToZonedDateTime(offer.getInbound().getArrival())))
+                .filter(offer -> offer.getOutbound().getArrival()
+                        .isBefore(offer.getInbound().getDeparture()))
+                .filter(offer -> !offer.getOutbound().getDeparture().plusDays(6)
+                        .equals(offer.getInbound().getArrival()))
                 .collect(Collectors.toList());
     }
 
@@ -46,19 +46,15 @@ public class FlightOfferService {
                 .map(offer -> new FlightOffer(
                         offer.getStartLocation(),
                         offer.getEndLocation(),
-                        convertOffsetToZonedDateTime(offer.getInbound().getDeparture()),
-                        convertOffsetToZonedDateTime(offer.getOutbound().getDeparture()),
+                        offer.getInbound().getDeparture(),
+                        offer.getOutbound().getDeparture(),
                         getTripType(offer),
                         offer.getPrice() / offer.getNumberOfPassengers(),
                         offer.getNumberOfPassengers(),
                         offer.getProvider()))
                 .collect(Collectors.toList());
     }
-
-    private ZonedDateTime convertOffsetToZonedDateTime(OffsetDateTime rawValue) {
-        return rawValue.toZonedDateTime().withZoneSameInstant(ZoneOffset.UTC);
-    }
-
+    
     private TripType getTripType(FlightOfferRequest offer) {
         if(offer.getStartLocation().equals(offer.getEndLocation())) {
             return TripType.ROUND_TRIP;

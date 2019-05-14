@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -29,8 +30,8 @@ public class FlightOffer {
     @JoinColumn(name = "endlocation_id")
     @JsonProperty("to")
     private Location endLocation;
-    private ZonedDateTime inbound;
-    private ZonedDateTime outbound;
+    private OffsetDateTime inbound;
+    private OffsetDateTime outbound;
     @Column(name="trip_type")
     private TripType tripType;
     @Column(name="price_per_passenger")
@@ -38,7 +39,7 @@ public class FlightOffer {
     private int numberOfPassengers;
     private String provider;
 
-    public FlightOffer(Location startLocation, Location endLocation, ZonedDateTime inbound, ZonedDateTime outbound, TripType tripType, int pricePerPassenger, int numberOfPassengers, String provider) {
+    public FlightOffer(Location startLocation, Location endLocation, OffsetDateTime inbound, OffsetDateTime outbound, TripType tripType, int pricePerPassenger, int numberOfPassengers, String provider) {
         this.startLocation= startLocation;
         this.endLocation = endLocation;
         this.inbound = inbound;
