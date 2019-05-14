@@ -2,14 +2,12 @@ package com.liligo.assignment.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "flight_offers")
@@ -30,8 +28,10 @@ public class FlightOffer {
     @JoinColumn(name = "endlocation_id")
     @JsonProperty("to")
     private Location endLocation;
-    private OffsetDateTime inbound;
-    private OffsetDateTime outbound;
+    private OffsetDateTime inboundDeparture;
+    private OffsetDateTime inboundArrival;
+    private OffsetDateTime outboundDeparture;
+    private OffsetDateTime outboundArrival;
     @Column(name="trip_type")
     private TripType tripType;
     @Column(name="price_per_passenger")
@@ -39,11 +39,11 @@ public class FlightOffer {
     private int numberOfPassengers;
     private String provider;
 
-    public FlightOffer(Location startLocation, Location endLocation, OffsetDateTime inbound, OffsetDateTime outbound, TripType tripType, int pricePerPassenger, int numberOfPassengers, String provider) {
+    public FlightOffer(Location startLocation, Location endLocation, OffsetDateTime inboundDeparture, OffsetDateTime outboundDeparture, TripType tripType, int pricePerPassenger, int numberOfPassengers, String provider) {
         this.startLocation= startLocation;
         this.endLocation = endLocation;
-        this.inbound = inbound;
-        this.outbound= outbound;
+        this.inboundDeparture = inboundDeparture;
+        this.outboundDeparture = outboundDeparture;
         this.tripType = tripType;
         this.pricePerPassenger = pricePerPassenger;
         this.numberOfPassengers= numberOfPassengers;
