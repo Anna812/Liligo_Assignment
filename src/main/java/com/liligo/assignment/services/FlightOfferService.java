@@ -1,12 +1,17 @@
 package com.liligo.assignment.services;
 
-import com.liligo.assignment.models.*;
+import com.liligo.assignment.models.FlightDateTime;
+import com.liligo.assignment.models.FlightOffer;
+import com.liligo.assignment.models.FlightOfferRequest;
+import com.liligo.assignment.models.FlightOfferResponse;
+import com.liligo.assignment.models.TripType;
 import com.liligo.assignment.repos.FlightOfferRepository;
-import com.sun.scenario.effect.Offset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,9 +42,10 @@ public class FlightOfferService {
     }
 
     private OffsetDateTime convertToUTC(OffsetDateTime inboundDeparture) {
-        Optional<OffsetDateTime> optionalDepartureTime = new Optional<>(inboundDeparture);
-        return optionalDepartureTime.map(x -> x.withOffsetSameInstant(ZoneOffset.UTC))
-                .orElse(null);
+        if(inboundDeparture != null) {
+            return inboundDeparture.withOffsetSameInstant(ZoneOffset.UTC);
+        }
+        return null;
     }
 
     private int calculateOutboundDuration(FlightOffer offer) {
@@ -60,7 +66,7 @@ public class FlightOfferService {
     private List<FlightOfferRequest> filterOffersToSave(List<FlightOfferRequest> offers) {
         return offers.stream()
                 .filter(FlightOfferRequest::isPriceUnderLimit)
-                .filter(offer -> !offer.isDomestic())
+                .filter(FlightOfferRequest::isInternational)
                 .filter(FlightOfferRequest::areDatesConsequent)
                 .filter(FlightOfferRequest::isTripLongEnough)
                 .collect(Collectors.toList());
@@ -68,17 +74,20 @@ public class FlightOfferService {
 
     private List<FlightOffer> mapRequestObject(List<FlightOfferRequest> filteredOffers) {
         return filteredOffers.stream()
-                .map(offer -> new FlightOffer(
-                        offer.getStartLocation(),
-                        offer.getEndLocation(),
-                        offer.getInbound() !=  null ? offer.getInbound().getDeparture() : null,
-                        offer.getInbound() !=  null ? offer.getInbound().getArrival() : null,
-                        offer.getOutbound().getDeparture(),
-                        offer.getOutbound().getArrival(),
-                        getTripType(offer),
-                        offer.getPrice() / offer.getNumberOfPassengers(),
-                        offer.getNumberOfPassengers(),
-                        offer.getProvider()))
+                .map(offer -> {
+                    Optional<FlightDateTime> inboundTimes = new Optional<>(offer.getInbound());
+                    return new FlightOffer(
+                            offer.getStartLocation(),
+                            offer.getEndLocation(),
+                            inboundTimes.map(FlightDateTime::getDeparture).orElseGet(null),
+                            inboundTimes.map(FlightDateTime::getArrival).orElseGet(null),
+                            offer.getOutbound().getDeparture(),
+                            offer.getOutbound().getArrival(),
+                            getTripType(offer),
+                            offer.getPrice() / offer.getNumberOfPassengers(),
+                            offer.getNumberOfPassengers(),
+                            offer.getProvider());
+                })
                 .collect(Collectors.toList());
     }
 
