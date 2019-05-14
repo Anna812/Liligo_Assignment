@@ -6,19 +6,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.OffsetDateTime;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class FlightOfferResponse {
+    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     @JsonProperty("from")
     private Location startLocation;
     @JsonProperty("to")
     private Location endLocation;
-    private OffsetDateTime inbound;
-    private OffsetDateTime outbound;
+    private String inbound;
+    private String outbound;
     private TripType tripType;
     private int outboundFlightDuration;
     private int pricePerPassenger;

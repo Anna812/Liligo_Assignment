@@ -32,8 +32,8 @@ public class FlightOfferService {
                 .map(offer -> new FlightOfferResponse(
                         offer.getStartLocation(),
                         offer.getEndLocation(),
-                        convertToUTC(offer.getInboundDeparture()),
-                        offer.getOutboundDeparture().withOffsetSameInstant(ZoneOffset.UTC),
+                        formatDate(convertToUTC(offer.getInboundDeparture())),
+                        formatDate(convertToUTC(offer.getOutboundDeparture())),
                         offer.getTripType(),
                         calculateOutboundDuration(offer),
                         offer.getPricePerPassenger(),
@@ -41,9 +41,16 @@ public class FlightOfferService {
                 .collect(Collectors.toList());
     }
 
-    private OffsetDateTime convertToUTC(OffsetDateTime inboundDeparture) {
-        if(inboundDeparture != null) {
-            return inboundDeparture.withOffsetSameInstant(ZoneOffset.UTC);
+    private String formatDate(OffsetDateTime dateTimeUTC) {
+        if(dateTimeUTC != null) {
+            return dateTimeUTC.format(FlightOfferResponse.dateFormatter);
+        }
+        return null;
+    }
+
+    private OffsetDateTime convertToUTC(OffsetDateTime offsetDateTime) {
+        if(offsetDateTime != null) {
+            return offsetDateTime.withOffsetSameInstant(ZoneOffset.UTC);
         }
         return null;
     }
@@ -75,12 +82,16 @@ public class FlightOfferService {
     private List<FlightOffer> mapRequestObject(List<FlightOfferRequest> filteredOffers) {
         return filteredOffers.stream()
                 .map(offer -> {
-                    Optional<FlightDateTime> inboundTimes = new Optional<>(offer.getInbound());
+                    Optional<FlightOfferRequest> optionalOffer = Optional.of(offer);
                     return new FlightOffer(
                             offer.getStartLocation(),
                             offer.getEndLocation(),
-                            inboundTimes.map(FlightDateTime::getDeparture).orElseGet(null),
-                            inboundTimes.map(FlightDateTime::getArrival).orElseGet(null),
+                            optionalOffer.map(FlightOfferRequest::getInbound)
+                                    .map(FlightDateTime::getDeparture)
+                                    .orElse(null),
+                            optionalOffer.map(FlightOfferRequest::getInbound)
+                                    .map(FlightDateTime::getArrival)
+                                    .orElse(null),
                             offer.getOutbound().getDeparture(),
                             offer.getOutbound().getArrival(),
                             getTripType(offer),
