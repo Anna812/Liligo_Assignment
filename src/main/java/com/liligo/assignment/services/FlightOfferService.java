@@ -47,14 +47,16 @@ public class FlightOfferService {
                         offer.getStartLocation(),
                         offer.getEndLocation(),
                         offer.getInbound().getDeparture(),
+                        offer.getInbound().getArrival(),
                         offer.getOutbound().getDeparture(),
+                        offer.getOutbound().getArrival(),
                         getTripType(offer),
                         offer.getPrice() / offer.getNumberOfPassengers(),
                         offer.getNumberOfPassengers(),
                         offer.getProvider()))
                 .collect(Collectors.toList());
     }
-    
+
     private TripType getTripType(FlightOfferRequest offer) {
         if(offer.getStartLocation().equals(offer.getEndLocation())) {
             return TripType.ROUND_TRIP;
