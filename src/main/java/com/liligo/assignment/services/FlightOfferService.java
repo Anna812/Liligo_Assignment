@@ -29,7 +29,7 @@ public class FlightOfferService {
                 .map(offer -> new FlightOfferResponse(
                         offer.getStartLocation(),
                         offer.getEndLocation(),
-                        offer.getInboundDeparture().withOffsetSameInstant(ZoneOffset.UTC),
+                        offer.getInboundDeparture() != null ? offer.getInboundDeparture().withOffsetSameInstant(ZoneOffset.UTC) : null,
                         offer.getOutboundDeparture().withOffsetSameInstant(ZoneOffset.UTC),
                         offer.getTripType(),
                         calculateOutboundDuration(offer),
@@ -59,9 +59,9 @@ public class FlightOfferService {
                 .filter(offer -> offer.getPrice() / offer.getNumberOfPassengers() < 1000)
                 .filter(offer -> !offer.getStartLocation().getCountry()
                         .equals(offer.getEndLocation().getCountry()))
-                .filter(offer -> offer.getOutbound().getArrival()
+                .filter(offer -> offer.getInbound() == null || offer.getOutbound().getArrival()
                         .isBefore(offer.getInbound().getDeparture()))
-                .filter(offer -> !offer.getOutbound().getDeparture().plusDays(6)
+                .filter(offer -> offer.getInbound() == null || !offer.getOutbound().getDeparture().plusDays(6)
                         .equals(offer.getInbound().getArrival()))
                 .collect(Collectors.toList());
     }
@@ -71,8 +71,8 @@ public class FlightOfferService {
                 .map(offer -> new FlightOffer(
                         offer.getStartLocation(),
                         offer.getEndLocation(),
-                        offer.getInbound().getDeparture(),
-                        offer.getInbound().getArrival(),
+                        offer.getInbound() !=  null ? offer.getInbound().getDeparture() : null,
+                        offer.getInbound() !=  null ? offer.getInbound().getArrival() : null,
                         offer.getOutbound().getDeparture(),
                         offer.getOutbound().getArrival(),
                         getTripType(offer),
@@ -83,7 +83,7 @@ public class FlightOfferService {
     }
 
     private TripType getTripType(FlightOfferRequest offer) {
-        if(offer.getStartLocation().equals(offer.getEndLocation())) {
+        if(offer.getInbound() != null) {
             return TripType.ROUND_TRIP;
         }
         return TripType.ONE_WAY;
