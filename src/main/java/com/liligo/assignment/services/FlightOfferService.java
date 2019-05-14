@@ -5,14 +5,14 @@ import com.liligo.assignment.models.FlightOfferRequest;
 import com.liligo.assignment.models.FlightOfferResponse;
 import com.liligo.assignment.models.TripType;
 import com.liligo.assignment.repos.FlightOfferRepository;
+import com.sun.scenario.effect.Offset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class FlightOfferService {
@@ -21,8 +21,31 @@ public class FlightOfferService {
     FlightOfferRepository repository;
 
     public List<FlightOfferResponse> findAllFlights() {
-        repository.findAll();
-        return null;
+        return mapToResponseObject(repository.findAll());
+    }
+
+    private List<FlightOfferResponse> mapToResponseObject(Iterable<FlightOffer> offers) {
+        return StreamSupport.stream(offers.spliterator(), false)
+                .map(offer -> new FlightOfferResponse(
+                        offer.getStartLocation(),
+                        offer.getEndLocation(),
+                        offer.getInboundDeparture().withOffsetSameInstant(ZoneOffset.UTC),
+                        offer.getOutboundDeparture().withOffsetSameInstant(ZoneOffset.UTC),
+                        offer.getTripType(),
+                        calculateOutboundDuration(offer),
+                        offer.getPricePerPassenger(),
+                        offer.getProvider()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private int calculateOutboundDuration(FlightOffer offer) {
+        long duration = Duration.between(offer.getOutboundDeparture(), offer.getOutboundArrival()).toMinutes();
+        return (int) duration;
+    }
+
+    public List<FlightOfferResponse> findOfferByNoOfPassengers(int numberOfPassengers) {
+        return mapToResponseObject(repository.findAllByNumberOfPassengers(numberOfPassengers));
     }
 
     public void saveOffers(List<FlightOfferRequest> offers) {
@@ -64,10 +87,5 @@ public class FlightOfferService {
             return TripType.ROUND_TRIP;
         }
         return TripType.ONE_WAY;
-    }
-
-    public List<FlightOfferResponse> findOfferByNoOfPassengers(int numberOfPassengers) {
-        repository.findAllByNumberOfPassengers(numberOfPassengers);
-        return null;
     }
 }
