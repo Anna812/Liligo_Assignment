@@ -2,6 +2,7 @@ package com.liligo.assignment.controllers;
 
 import com.liligo.assignment.models.FlightOffer;
 import com.liligo.assignment.models.FlightOfferRequest;
+import com.liligo.assignment.models.FlightOfferResponse;
 import com.liligo.assignment.services.FlightOfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,14 +20,14 @@ public class FlightOfferController {
     FlightOfferService flightOfferService;
 
     @GetMapping("/offers")
-    public List<FlightOffer> index() {
+    public List<FlightOfferResponse> index() {
         return flightOfferService.findAllFlights();
     }
 
     @GetMapping("/offers/{numberOfPassengers}")
-    public List<FlightOffer> index(@PathVariable int numberOfPassengers) {
+    public List<FlightOfferResponse> index(@PathVariable int numberOfPassengers) {
         if(numberOfPassengers > 0) {
-            List<FlightOffer> offers = flightOfferService.findOfferByNoOfPassengers(numberOfPassengers);
+            List<FlightOfferResponse> offers = flightOfferService.findOfferByNoOfPassengers(numberOfPassengers);
             if(!CollectionUtils.isEmpty(offers)) {
                 return offers;
             }

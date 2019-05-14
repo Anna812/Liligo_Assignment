@@ -2,6 +2,7 @@ package com.liligo.assignment.services;
 
 import com.liligo.assignment.models.FlightOffer;
 import com.liligo.assignment.models.FlightOfferRequest;
+import com.liligo.assignment.models.FlightOfferResponse;
 import com.liligo.assignment.models.TripType;
 import com.liligo.assignment.repos.FlightOfferRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,9 @@ public class FlightOfferService {
     @Autowired
     FlightOfferRepository repository;
 
-    public List<FlightOffer> findAllFlights() {
-        return (List<FlightOffer>)repository.findAll();
+    public List<FlightOfferResponse> findAllFlights() {
+        repository.findAll();
+        return null;
     }
 
     public void saveOffers(List<FlightOfferRequest> offers) {
@@ -64,7 +66,8 @@ public class FlightOfferService {
         return TripType.ONE_WAY;
     }
 
-    public List<FlightOffer> findOfferByNoOfPassengers(int numberOfPassengers) {
-        return repository.findAllByNumberOfPassengers(numberOfPassengers);
+    public List<FlightOfferResponse> findOfferByNoOfPassengers(int numberOfPassengers) {
+        repository.findAllByNumberOfPassengers(numberOfPassengers);
+        return null;
     }
 }
