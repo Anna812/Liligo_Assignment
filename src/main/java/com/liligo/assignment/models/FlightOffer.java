@@ -1,5 +1,7 @@
 package com.liligo.assignment.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +19,15 @@ public class FlightOffer {
     @Id
     @GeneratedValue
     @Column(name="datetime_id")
+    @JsonIgnore
     private long id;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "startlocation_id")
+    @JsonProperty("from")
     private Location startLocation;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "endlocation_id")
+    @JsonProperty("to")
     private Location endLocation;
     private ZonedDateTime inbound;
     private ZonedDateTime outbound;
